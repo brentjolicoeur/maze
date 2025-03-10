@@ -3,7 +3,7 @@ from cell import Cell
 from maze import Maze
 
 def main():    
-    num_rows = 12
+    num_rows = 16
     num_cols = 16
     margin = 50
     screen_x = 800
@@ -12,7 +12,7 @@ def main():
     cell_size_y = (screen_y - 2 * margin) / num_rows
     win = Window(screen_x, screen_y)
 
-    maze = Maze(margin, margin, num_rows, num_cols, cell_size_x, cell_size_y, win)
+    maze = Maze(margin, margin, num_rows, num_cols, cell_size_x, cell_size_y, win, 2)
 
     win.wait_for_close()
 
