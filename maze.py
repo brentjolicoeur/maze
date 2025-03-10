@@ -1,5 +1,5 @@
 from cell import Cell
-from graphics import Point
+from graphics import Point, Line
 from time import sleep
 import random
 
@@ -23,6 +23,7 @@ class Maze():
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         for i in range(self._columns):
@@ -46,7 +47,7 @@ class Maze():
 
     def _animate(self):
         self._window.redraw()
-        sleep(0.05)
+        sleep(0.02)
 
     def _break_entrance_and_exit(self):
         self._cells[0][0].has_top_wall = False
@@ -98,3 +99,56 @@ class Maze():
                 self._cells[i][j].has_bottom_wall = False
                 self._cells[i][j+1].has_top_wall = False
                 self._break_walls_r(i, j + 1)
+
+    def _reset_cells_visited(self):
+        for i in range(self._columns):
+            for j in range(self._rows):
+                self._cells[i][j].visited = False
+
+    def solve(self):
+        solved = self._solve_r(0, 0)
+        return solved
+
+    def _solve_r(self, i, j):
+        goal = self._cells[self._columns - 1][self._rows -1]
+
+        self._animate()
+        self._cells[i][j].visited = True
+
+        if self._cells[i][j] == goal:
+            return True
+        
+        #check west
+        if i - 1 > 0 and not self._cells[i][j].has_left_wall and not self._cells[i-1][j].visited:
+            self._cells[i][j].draw_move(self._cells[i-1][j])
+            on_path = self._solve_r(i - 1, j)
+            if on_path:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i-1][j], undo=True)
+        #check east
+        if i + 1 < self._columns and not self._cells[i][j].has_right_wall and not self._cells[i+1][j].visited:
+            self._cells[i][j].draw_move(self._cells[i+1][j])
+            on_path = self._solve_r(i + 1, j)
+            if on_path:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i+1][j], undo=True)
+        #check north
+        if j - 1 > 0 and not self._cells[i][j].has_top_wall and not self._cells[i][j-1].visited:
+            self._cells[i][j].draw_move(self._cells[i][j-1])
+            on_path = self._solve_r(i, j - 1)
+            if on_path:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i][j-1], undo=True)
+        #check south
+        if j + 1 < self._rows and not self._cells[i][j].has_bottom_wall and not self._cells[i][j+1].visited:
+            self._cells[i][j].draw_move(self._cells[i][j+1])
+            on_path = self._solve_r(i, j+1)
+            if on_path:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i][j+1], undo=True)
+        
+        return False
