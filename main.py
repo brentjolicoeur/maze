@@ -1,5 +1,4 @@
-from graphics import Window, Point, Line
-from cell import Cell
+from graphics import Window
 from maze import Maze
 
 def main():    
